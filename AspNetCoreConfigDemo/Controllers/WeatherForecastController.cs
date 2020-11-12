@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreConfigDemo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,11 +22,16 @@ namespace AspNetCoreConfigDemo.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        public IConfiguration Configuration { get; }
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IConfiguration configuration)
+        public MyConfigurationEntity Configuration { get; set;}
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IOptionsMonitor<MyConfigurationEntity> configuration)
         {
             _logger = logger;
-            Configuration = configuration;
+            Configuration = configuration.CurrentValue;
+
+            configuration.OnChange(config =>
+            {
+                Configuration = config;
+            });
         }
 
         [HttpGet]
@@ -44,15 +51,7 @@ namespace AspNetCoreConfigDemo.Controllers
         [Route("GetConfigSettings")]
         public string GetConfigSettings()
         {
-            var mySection = this.Configuration.GetSection("MyFeature");
-
-            JObject obj = new JObject();
-            foreach (var attribute in mySection.GetChildren().AsEnumerable())
-            {
-                obj[attribute.Key] = attribute.Value;
-            }
-
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(Configuration);
         }
     }
 }
