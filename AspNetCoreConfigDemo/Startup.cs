@@ -21,7 +21,10 @@ namespace AspNetCoreConfigDemo
         {
             services.AddControllers();
 
-            services.Configure<MyConfigurationEntity>(Configuration.GetSection("MyFeature"));
+            //services.Configure<MyConfigurationEntity>(Configuration.GetSection("MyFeature"));
+            services.AddOptions<MyConfigurationEntity>()
+            .Bind(Configuration.GetSection("MyFeature"))
+            .ValidateDataAnnotations();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
