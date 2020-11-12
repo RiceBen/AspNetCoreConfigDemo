@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -47,10 +46,8 @@ namespace AspNetCoreConfigDemo.Controllers
             var mySection = this.Configuration.GetSection("MyFeature");
 
             JObject obj = new JObject();
-            foreach (var attribute in mySection.GetChildren().AsEnumerable())
-            {
-                obj[attribute.Key] = attribute.Value;
-            }
+            obj["FeatureOne.Name"] = mySection.GetValue<string>("FeatureOne:Name");
+            obj["FeatureOne.IsEnable"] = mySection.GetValue<bool>("FeatureOne:IsEnable");
 
             return JsonConvert.SerializeObject(obj);
         }
